@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.formation</groupId>
   <artifactId>startJDBC</artifactId>
-  <!--package: com.formation.startJDBC-->
+  <!--package: com.formation.start_jdbc-->
   <version>0.0.1-SNAPSHOT</version>
 
   <build>
@@ -31,6 +31,13 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.21</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.13.3</version>
     </dependency>
 
   </dependencies>
