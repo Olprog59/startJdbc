@@ -1,4 +1,4 @@
-package com.formation.start_jdbc;
+package com.formation.start_jdbc.models;
 
 
 import lombok.*;

@@ -1,10 +1,9 @@
 package com.formation.start_jdbc;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import com.formation.start_jdbc.models.Livre;
+
 import java.sql.*;
 import java.util.Optional;
-import java.util.Properties;
 
 public class StartJdbc {
 
