@@ -8,15 +8,41 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public class LivreService implements LivreRepository {
 
+    private final Connection connection = ConnectionMySQL.getInstance();
+
     @Override
     public Optional<List<Livre>> findByTitle(String titre) {
-        return null;
+        List<Livre> livres = null;
+        String query = "select * from livre where titre = ?";
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            st.setString(1, titre);
+            try (ResultSet res = st.executeQuery()) {
+                if (res.getRow() > 0) {
+                    livres = new ArrayList<>();
+                }
+                Livre livre = null;
+                while (res.next()) {
+                    livre = new Livre();
+                    livre.setIsbn(res.getString("isbn"));
+                    livre.setTitre(res.getString("titre"));
+                    livre.setAuteurNom(res.getString("auteur_nom"));
+                    livre.setAuteurPrenom(res.getString("auteur_prenom"));
+                    livre.setEditeur(res.getString("editeur"));
+                    livre.setAnnee(res.getInt("annee"));
+                    livres.add(livre);
+                }
+            }
+        } catch (SQLException s) {
+            s.printStackTrace();
+        }
+        return Optional.ofNullable(livres);
     }
 
     @Override
@@ -27,24 +53,19 @@ public class LivreService implements LivreRepository {
     @Override
     public Optional<Livre> findByID(String id) {
         Livre livre = null;
-        try (Connection c = ConnectionMySQL.getInstance()) {
-
-            String query = "select * from livre where isbn = ?";
-            try (PreparedStatement st = c.prepareStatement(query)) {
-                st.setString(1, id);
-                try (ResultSet res = st.executeQuery()) {
-                    while (res.next()) {
-                        livre = new Livre();
-                        livre.setIsbn(res.getString("isbn"));
-                        livre.setTitre(res.getString("titre"));
-                        livre.setAuteurNom(res.getString("auteur_nom"));
-                        livre.setAuteurPrenom(res.getString("auteur_prenom"));
-                        livre.setEditeur(res.getString("editeur"));
-                        livre.setAnnee(res.getInt("annee"));
-                    }
+        String query = "select * from livre where isbn = ?";
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            st.setString(1, id);
+            try (ResultSet res = st.executeQuery()) {
+                while (res.next()) {
+                    livre = new Livre();
+                    livre.setIsbn(res.getString("isbn"));
+                    livre.setTitre(res.getString("titre"));
+                    livre.setAuteurNom(res.getString("auteur_nom"));
+                    livre.setAuteurPrenom(res.getString("auteur_prenom"));
+                    livre.setEditeur(res.getString("editeur"));
+                    livre.setAnnee(res.getInt("annee"));
                 }
-            } catch (SQLException s) {
-                s.printStackTrace();
             }
         } catch (SQLException s) {
             s.printStackTrace();
@@ -57,21 +78,19 @@ public class LivreService implements LivreRepository {
         Optional<Livre> livreOptional = this.findByID(livre.getIsbn());
         String query = null;
         if (livreOptional.isPresent()) {
-                 query = "UPDATE livre set titre = ?, auteur_nom = ?, auteur_prenom = ?, editeur = ?, annee = ? where isbn = ?";
+            query = "UPDATE livre set titre = ?, auteur_nom = ?, auteur_prenom = ?, editeur = ?, annee = ? where isbn = ?";
         } else {
-                query = "INSERT into livre (titre, auteur_nom, auteur_prenom, editeur, annee, isbn) values (?,?,?,?,?,?)";
+            query = "INSERT into livre (titre, auteur_nom, auteur_prenom, editeur, annee, isbn) values (?,?,?,?,?,?)";
         }
-        try (Connection c = ConnectionMySQL.getInstance()) {
-            try (PreparedStatement st = c.prepareStatement(query)) {
-                st.setString(1, livre.getTitre());
-                st.setString(2, livre.getAuteurNom());
-                st.setString(3, livre.getAuteurPrenom());
-                st.setString(4, livre.getEditeur());
-                st.setInt(5, livre.getAnnee());
-                st.setString(6, livre.getIsbn());
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            st.setString(1, livre.getTitre());
+            st.setString(2, livre.getAuteurNom());
+            st.setString(3, livre.getAuteurPrenom());
+            st.setString(4, livre.getEditeur());
+            st.setInt(5, livre.getAnnee());
+            st.setString(6, livre.getIsbn());
 
-                return st.executeUpdate();
-            }
+            return st.executeUpdate();
         } catch (SQLException s) {
             s.printStackTrace();
         }
@@ -85,18 +104,21 @@ public class LivreService implements LivreRepository {
 
     @Override
     public int deleteByID(String id) {
-        try (Connection c = ConnectionMySQL.getInstance()) {
-
-            String query = "DELETE from livre where isbn = ?";
-            try (PreparedStatement st = c.prepareStatement(query)) {
-                st.setString(1, id);
-
-                return st.executeUpdate();
-            }
-
-        } catch (SQLException s) {
+        String query = "DELETE from livre where isbn = ?";
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            st.setString(1, id);
+            return st.executeUpdate();
+        } catch (SQLException s){
             s.printStackTrace();
         }
         return 0;
+    }
+
+    public void closeConnection(){
+        try {
+            connection.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }

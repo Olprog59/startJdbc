@@ -1,6 +1,7 @@
 package com.formation.start_jdbc;
 
 import com.formation.start_jdbc.models.Livre;
+import com.formation.start_jdbc.services.LivreService;
 
 import java.sql.*;
 import java.util.Optional;
@@ -16,15 +17,19 @@ public class StartJdbc {
                 "Gallimard",
                 1972);
 
-//        int nb = add(livre);
-//        System.out.println(nb + " row(s) insert");
-//
-//        Optional<Livre> livre1 = findByID(livre.getIsbn());
-//        if (livre1.isPresent()){
-//            System.out.println(livre1.get());
-//        }
-//
-//        nb = deleteByID(livre.getIsbn());
-//        System.out.println(nb + " row(s) delete");
+        LivreService livreService = new LivreService();
+
+        int nb = livreService.save(livre);
+        System.out.println(nb + " row(s) insert");
+
+        Optional<Livre> livre1 = livreService.findByID(livre.getIsbn());
+        if (livre1.isPresent()){
+            System.out.println(livre1.get());
+        }
+
+        nb = livreService.deleteByID(livre.getIsbn());
+        System.out.println(nb + " row(s) delete");
+
+        livreService.closeConnection();
     }
 }
