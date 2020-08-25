@@ -54,20 +54,24 @@ public class LivreService implements LivreRepository {
 
     @Override
     public int save(Livre livre) {
+        Optional<Livre> livreOptional = this.findByID(livre.getIsbn());
+        String query = null;
+        if (livreOptional.isPresent()) {
+                 query = "UPDATE livre set titre = ?, auteur_nom = ?, auteur_prenom = ?, editeur = ?, annee = ? where isbn = ?";
+        } else {
+                query = "INSERT into livre (titre, auteur_nom, auteur_prenom, editeur, annee, isbn) values (?,?,?,?,?,?)";
+        }
         try (Connection c = ConnectionMySQL.getInstance()) {
-
-            String query = "INSERT into livre values (?,?,?,?,?,?)";
             try (PreparedStatement st = c.prepareStatement(query)) {
-                st.setString(1, livre.getIsbn());
-                st.setString(2, livre.getTitre());
-                st.setString(3, livre.getAuteurNom());
-                st.setString(4, livre.getAuteurPrenom());
-                st.setString(5, livre.getEditeur());
-                st.setInt(6, livre.getAnnee());
+                st.setString(1, livre.getTitre());
+                st.setString(2, livre.getAuteurNom());
+                st.setString(3, livre.getAuteurPrenom());
+                st.setString(4, livre.getEditeur());
+                st.setInt(5, livre.getAnnee());
+                st.setString(6, livre.getIsbn());
 
                 return st.executeUpdate();
             }
-
         } catch (SQLException s) {
             s.printStackTrace();
         }
