@@ -7,26 +7,6 @@ import java.util.Optional;
 
 public class StartJdbc {
 
-    public static int deleteByID(String isbn) {
-        Optional<Connection> conn = getConnection();
-
-        if (conn.isPresent()) {
-            try (Connection c = conn.get()) {
-
-                String query = "DELETE from livre where isbn = ?";
-                try (PreparedStatement st = c.prepareStatement(query)) {
-                    st.setString(1, isbn);
-
-                    return st.executeUpdate();
-                }
-
-            } catch (SQLException s) {
-                s.printStackTrace();
-            }
-        }
-        return 0;
-    }
-
     public static int add(Livre livre) {
         Optional<Connection> conn = getConnection();
 
