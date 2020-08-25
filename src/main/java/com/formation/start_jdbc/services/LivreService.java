@@ -79,8 +79,8 @@ public class LivreService implements LivreRepository {
     }
 
     @Override
-    public int delete(Livre objet) {
-        return 0;
+    public int delete(Livre livre) {
+        return this.deleteByID(livre.getIsbn());
     }
 
     @Override
