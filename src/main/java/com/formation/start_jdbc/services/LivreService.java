@@ -53,7 +53,24 @@ public class LivreService implements LivreRepository {
     }
 
     @Override
-    public int save(Livre objet) {
+    public int save(Livre livre) {
+        try (Connection c = ConnectionMySQL.getInstance()) {
+
+            String query = "INSERT into livre values (?,?,?,?,?,?)";
+            try (PreparedStatement st = c.prepareStatement(query)) {
+                st.setString(1, livre.getIsbn());
+                st.setString(2, livre.getTitre());
+                st.setString(3, livre.getAuteurNom());
+                st.setString(4, livre.getAuteurPrenom());
+                st.setString(5, livre.getEditeur());
+                st.setInt(6, livre.getAnnee());
+
+                return st.executeUpdate();
+            }
+
+        } catch (SQLException s) {
+            s.printStackTrace();
+        }
         return 0;
     }
 
