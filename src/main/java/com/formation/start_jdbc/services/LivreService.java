@@ -36,16 +36,49 @@ public class LivreService implements LivreRepository {
                     livres.add(livre);
                 }
             }
-            return Optional.ofNullable(livres);
+            return Optional.of(livres);
         } catch (SQLException s) {
             s.printStackTrace();
         }
         return Optional.empty();
     }
 
+    public int countRows() {
+        String query = "select count(*) as c from livre";
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            try (ResultSet res = st.executeQuery()) {
+                res.next();
+                return res.getInt("c");
+            }
+        } catch (SQLException s) {
+            s.printStackTrace();
+        }
+        return 0;
+    }
+
     @Override
     public Optional<Collection<Livre>> findAll() {
-        return null;
+        List<Livre> livres = new ArrayList<>();
+        String query = "select * from livre";
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            try (ResultSet res = st.executeQuery()) {
+                Livre livre = null;
+                while (res.next()) {
+                    livre = new Livre();
+                    livre.setIsbn(res.getString("isbn"));
+                    livre.setTitre(res.getString("titre"));
+                    livre.setAuteurNom(res.getString("auteur_nom"));
+                    livre.setAuteurPrenom(res.getString("auteur_prenom"));
+                    livre.setEditeur(res.getString("editeur"));
+                    livre.setAnnee(res.getInt("annee"));
+                    livres.add(livre);
+                }
+            }
+            return Optional.of(livres);
+        } catch (SQLException s) {
+            s.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     @Override

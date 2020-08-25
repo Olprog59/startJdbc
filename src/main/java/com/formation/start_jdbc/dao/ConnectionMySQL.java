@@ -9,6 +9,9 @@ import java.util.Properties;
 
 public class ConnectionMySQL {
 
+    private ConnectionMySQL() {
+    }
+
     private static String url;
     private static String login;
     private static String password;
