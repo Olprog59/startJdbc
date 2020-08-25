@@ -8,33 +8,6 @@ import java.util.Properties;
 
 public class StartJdbc {
 
-    public static Optional<Connection> getConnection() {
-        Properties props = new Properties();
-        try (FileInputStream fis = new FileInputStream("conf.properties")) {
-            props.load(fis);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-
-        String driver = props.getProperty("jdbc.driver.class");
-        String url = props.getProperty("jdbc.url");
-        String login = props.getProperty("jdbc.login");
-        String password = props.getProperty("jdbc.password");
-
-        try {
-            Class.forName(driver);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(url, login, password);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return Optional.ofNullable(connection);
-    }
-
     public static Optional<Livre> findByID(String isbn) {
         Optional<Connection> conn = getConnection();
         Livre livre = null;
